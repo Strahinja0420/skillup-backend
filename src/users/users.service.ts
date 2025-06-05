@@ -1,26 +1,96 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  async create(createUserDto: CreateUserDto) {
+    try {
+      return await this.databaseService.user.create({
+      data: createUserDto,
+    });
+    } catch (error) {
+      throw new BadRequestException('Something went wrong while creating a user')
+    }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.databaseService.user.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findSpecific(id?: number, email?: string, username?: string) {
+    try {
+      const existingUser = await this.databaseService.user.findFirst({
+      where: {
+        OR: [{ email }, { id }, { username }],
+      },
+    });
+
+    if (!existingUser) {
+      throw new NotFoundException('User not found with the given email.');
+    }
+
+    return await this.databaseService.user.findFirst({
+      where: {
+        OR: [{ id }, { email }, { username }],
+      },
+    });
+    } catch (error) {
+      throw new BadRequestException('Something went wrong while finding a user')
+    }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async updateUser(email: string, updateUserDto: UpdateUserDto) {
+    try {
+      if (!email) {
+      throw new BadRequestException('Email must be provided.');
+    }
+
+    const existingUser = await this.databaseService.user.findFirst({
+      where: {
+        email,
+      },
+    });
+
+    if (!existingUser) {
+      throw new NotFoundException('User not found with the given email.');
+    }
+
+    const updatedUser = await this.databaseService.user.update({
+      where: { email: existingUser.email },
+      data: updateUserDto,
+    });
+
+    return updatedUser;
+    } catch (error) {
+      throw new BadRequestException('Something went wrong while updating a user')
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    try {
+      const existingUser = await this.databaseService.user.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!existingUser) {
+      throw new NotFoundException('User not found with the given id.');
+    }
+
+    return await this.databaseService.user.delete({
+      where: { id },
+    });
+    } catch (error) {
+      throw new BadRequestException('Something went wrong while deleting a user')
+    }
   }
 }
