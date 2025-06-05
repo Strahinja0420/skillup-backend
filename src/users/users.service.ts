@@ -6,6 +6,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { QueryUserDto } from './dto/query-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,23 +25,22 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.databaseService.user.findMany();
+    return await this.databaseService.user.findMany({
+      
+    });
   }
 
-  async findSpecific(id?: number, email?: string, username?: string) {
+  async findSpecific(queryUserDto: QueryUserDto) {
     try {
       return await this.databaseService.user.findFirst({
-        where: {
-          OR: [{ id }, { email }, { username }],
-        },
+        where: queryUserDto,
+        
       });
     } catch (error) {
       throw new BadRequestException(
         'Something went wrong while finding a user',
       );
     }
-
-      
   }
 
   async updateUser(email: string, updateUserDto: UpdateUserDto) {
