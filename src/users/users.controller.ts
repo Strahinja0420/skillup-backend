@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  BadRequestException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -19,16 +29,24 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findSpecific(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Patch(':email')
+  update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
+    if (!email) {
+      throw new BadRequestException('Provide an email to update user');
+    }
+
+    return this.usersService.updateUser(email, updateUserDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
+    if (!id) {
+      throw new BadRequestException('Provide an id to update user');
+    }
+
     return this.usersService.remove(+id);
   }
 }
