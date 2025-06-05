@@ -27,9 +27,20 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findSpecific(+id);
+  @Get('find')
+  findOne(
+    @Query('id') id?: number,
+    @Query('email') email?: string,
+    @Query('username') username?: string,
+  ) {
+
+    if (!id && !email && !username) {
+      throw new BadRequestException(
+        'At least one of id, email, or username must be provided',
+      );
+    }
+
+    return this.usersService.findSpecific(id ? +id : undefined, email, username);
   }
 
   @Patch(':email')
