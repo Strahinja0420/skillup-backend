@@ -1,8 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { AuctionsService } from './auctions.service';
 import { CreateAuctionDto } from './dto/create-auction.dto';
 import { UpdateAuctionDto } from './dto/update-auction.dto';
-import { AuthorInterceptor } from 'src/users/interceptors/author.interceptor';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 
@@ -12,7 +20,7 @@ export class AuctionsController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  create(@Body() createAuctionDto: CreateAuctionDto, @CurrentUser() user : any) {
+  create(@Body() createAuctionDto: CreateAuctionDto, @CurrentUser() user: any) {
     return this.auctionsService.create(createAuctionDto, user.userId);
   }
 
