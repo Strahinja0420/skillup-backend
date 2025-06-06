@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { AuctionsModule } from './auctions/auctions.module';
+import { BidsModule } from './bids/bids.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuctionsModule } from './auctions/auctions.module';
     }),
     AuthModule,
     AuctionsModule,
+    BidsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

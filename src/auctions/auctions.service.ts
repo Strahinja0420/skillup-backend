@@ -27,7 +27,10 @@ export class AuctionsService {
 
   async findAll() {
     return await this.databaseService.auction.findMany({
-      orderBy :{endTime : 'asc'}
+      orderBy :{endTime : 'asc'},
+      include : {
+        bids : true
+      }
     });
   }
 

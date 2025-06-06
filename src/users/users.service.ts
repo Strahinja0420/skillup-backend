@@ -27,7 +27,11 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.databaseService.user.findMany({});
+    return await this.databaseService.user.findMany({
+      include : {
+        bids : true
+      }
+    });
   }
 
   async findSpecific(queryUserDto: QueryUserDto) {
