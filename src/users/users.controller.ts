@@ -18,6 +18,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { IsPublic } from 'src/common/decorators/is-public.decorator';
 import { User } from 'generated/prisma';
+import { AuthGuard } from '@nestjs/passport';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -59,13 +61,19 @@ export class UsersController {
     return this.usersService.findSpecific(queryUserDto);
   }
 
-  @Patch(':email')
-  update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
+  @Patch('update-user')
+  update(@Query('email') email: string, @Body() updateUserDto: UpdateUserDto) {
     if (!email) {
       throw new BadRequestException('Provide an email to update user');
     }
 
     return this.usersService.updateUser(email, updateUserDto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('update-password')
+  updatePassword(@Body() updatePasswordDto : UpdatePasswordDto, @CurrentUser() user : any){
+    return this.usersService.updatePassword(updatePasswordDto, user.userId)
   }
 
   @Delete(':id')

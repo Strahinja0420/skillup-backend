@@ -7,6 +7,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { QueryUserDto } from './dto/query-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -25,16 +27,13 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.databaseService.user.findMany({
-      
-    });
+    return await this.databaseService.user.findMany({});
   }
 
   async findSpecific(queryUserDto: QueryUserDto) {
     try {
       return await this.databaseService.user.findFirst({
         where: queryUserDto,
-        
       });
     } catch (error) {
       throw new BadRequestException(
@@ -66,9 +65,55 @@ export class UsersService {
 
       return updatedUser;
     } catch (error) {
+      console.error(error);
       throw new BadRequestException(
         'Something went wrong while updating a user',
       );
+    }
+  }
+
+  async updatePassword(dto: UpdatePasswordDto, userId: number) {
+    try {
+      const user = await this.databaseService.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) throw new BadRequestException('User not found');
+
+      const passwordMatch = await bcrypt.compare(
+        dto.currentPassword,
+        user.password,
+      );
+
+      if (!passwordMatch) {
+        throw new BadRequestException('Current password is incorrect');
+      }
+
+      //These logs were used to fix my comparing not working
+
+      // console.log('user.password (hashed):', user.password); 
+      // console.log('dto.newPassword (plain):', dto.newPassword);
+
+      const samePassword = await bcrypt.compare(dto.newPassword, user.password);
+      // console.log('samePassword result:', samePassword);
+
+      if (samePassword) {
+        throw new BadRequestException(
+          'Your new password cant be the same as your old password!',
+        );
+      }
+
+      const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
+
+      await this.databaseService.user.update({
+        where: { id: userId },
+        data: { password: hashedPassword },
+      });
+
+      return { message: 'Password updated successfully' };
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Something went wrong');
     }
   }
 
