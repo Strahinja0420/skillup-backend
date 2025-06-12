@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
@@ -24,6 +25,7 @@ export class CreateAuctionDto {
   @MaxLength(500)
   description?: string;
 
+  @Type(() => Number)
   @IsNumber()
   @IsPositive()
   startingBid: number;
@@ -40,5 +42,8 @@ export class CreateAuctionDto {
 
   @IsDateString()
   endTime: string;
+
+  @IsOptional()
+  images?: string;
 }
 

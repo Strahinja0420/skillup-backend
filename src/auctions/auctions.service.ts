@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAuctionDto } from './dto/create-auction.dto';
 import { UpdateAuctionDto } from './dto/update-auction.dto';
 import { DatabaseService } from 'src/database/database.service';
-import { connect } from 'http2';
 
 @Injectable()
 export class AuctionsService {
@@ -13,29 +12,48 @@ export class AuctionsService {
       throw new Error('User ID is missing!');
     }
 
-    return await this.databaseService.auction.create({
-      data: {
-        ...createAuctionDto,
-        creator: {
-          connect: {
-            id: userId,
+    const endTime = new Date(createAuctionDto.endTime);
+    const now = new Date();
+
+    if (endTime <= now) {
+      throw new BadRequestException('Auction must end in the future.');
+    }
+
+    try {
+      return await this.databaseService.auction.create({
+        data: {
+          ...createAuctionDto,
+          creator: {
+            connect: {
+              id: userId,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+       console.log(error);
+      
+      throw new BadRequestException(
+        'Something went wrong while creating an auction.',
+      );
+    }
   }
 
   async findAll() {
     return await this.databaseService.auction.findMany({
-      orderBy :{endTime : 'asc'},
-      include : {
-        bids : true
-      }
+      orderBy: { endTime: 'asc' },
+      include: {
+        bids: true,
+      },
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auction`;
+  async findOne(id: number) {
+    return this.databaseService.auction.findUnique({
+      where: {
+        id,
+      },
+    });
   }
 
   async update(id: number, updateAuctionDto: UpdateAuctionDto) {
@@ -49,9 +67,9 @@ export class AuctionsService {
 
   async remove(id: number) {
     return await this.databaseService.auction.delete({
-      where :{
-        id
-      }
+      where: {
+        id,
+      },
     });
   }
 }

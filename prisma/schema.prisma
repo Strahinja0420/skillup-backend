@@ -60,7 +60,7 @@ model Auction {
   startTime DateTime @default(now())
   endTime   DateTime
 
-  images String[] @default([])
+  images String @default("")
 
   creatorId Int
   creator   User  @relation(fields: [creatorId], references: [id])
