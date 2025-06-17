@@ -16,7 +16,6 @@ export class AuthController {
   async login(@Req() req: Request & { user: User }) {
     return this.authService.login({
       email: req.user.email,
-      username: req.user.username,
       id: req.user.id,
     });
   }
@@ -25,10 +24,14 @@ export class AuthController {
   @IsPublic()
   @Post('register')
   register(@Req() req: Request & { user: User }) {
-    return this.authService.login({
+    try {
+      return this.authService.login({
       email: req.user.email,
-      username: req.user.username,
       id: req.user.id,
     });
+    } catch (error) {
+      console.log(error);
+      
+    }
   }
 }

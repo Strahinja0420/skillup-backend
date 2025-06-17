@@ -20,9 +20,12 @@ export class UsersService {
         data: createUserDto,
       });
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(
         'Something went wrong while creating a user',
       );
+      
+      
     }
   }
 
