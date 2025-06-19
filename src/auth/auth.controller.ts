@@ -1,4 +1,10 @@
-import { Controller, Post, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
@@ -26,12 +32,11 @@ export class AuthController {
   register(@Req() req: Request & { user: User }) {
     try {
       return this.authService.login({
-      email: req.user.email,
-      id: req.user.id,
-    });
+        email: req.user.email,
+        id: req.user.id,
+      });
     } catch (error) {
       console.log(error);
-      
     }
   }
 }

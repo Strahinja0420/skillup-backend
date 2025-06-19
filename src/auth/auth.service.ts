@@ -3,7 +3,7 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'generated/prisma';
 import { QueryUserDto } from 'src/users/dto/query-user.dto';
-import * as bcrypt from 'bcrypt'
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +12,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<Partial<User> | null> {
+  async validateUser(
+    email: string,
+    pass: string,
+  ): Promise<Partial<User> | null> {
     const user = await this.usersService.findSpecific({ email });
     if (user && this.dehash(pass, user.password)) {
       const { password, ...result } = user;
@@ -31,12 +34,12 @@ export class AuthService {
     };
   }
 
-  hash(input : string){
+  hash(input: string) {
     const salt = bcrypt.genSaltSync(10);
-    return bcrypt.hashSync(input,salt)
+    return bcrypt.hashSync(input, salt);
   }
 
-  dehash(password: string, comparator: string){
-    return bcrypt.compareSync(password, comparator)
+  dehash(password: string, comparator: string) {
+    return bcrypt.compareSync(password, comparator);
   }
 }

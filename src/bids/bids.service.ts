@@ -8,7 +8,10 @@ import { connect } from 'http2';
 export class BidsService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async create(createBidDto: CreateBidDto & {auctionId : number}, userId: number) {
+  async create(
+    createBidDto: CreateBidDto & { auctionId: number },
+    userId: number,
+  ) {
     const auction = this.databaseService.auction.findUnique({
       where: {
         id: createBidDto.auctionId,

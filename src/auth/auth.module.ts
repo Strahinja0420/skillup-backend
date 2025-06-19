@@ -8,17 +8,20 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
 
-
 @Module({
-  imports: [UsersModule, PassportModule, JwtModule.registerAsync({
-    imports : [ConfigModule],
-    inject: [ConfigService],
-    useFactory: (configService : ConfigService) =>({
-      secret: configService.get('JWT_SECRET'),
-    })
-  })],
+  imports: [
+    UsersModule,
+    PassportModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+      }),
+    }),
+  ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy,JwtStrategy],
-  exports: [AuthService]
+  providers: [AuthService, LocalStrategy, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

@@ -23,8 +23,7 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @IsPublic()
   @Post()
@@ -41,17 +40,22 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getMe(@CurrentUser() user: User) {
-    return {
-      user,
-    };
+    const queryDto: QueryUserDto = { id: user.id };
+    return this.usersService.findSpecific(queryDto);
+  }
+
+  @Get('me/auctions')
+  async getUserAuctions(@CurrentUser() user: User) {
+    try {
+      return this.usersService.getUserAuctions(user.id);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   @IsPublic()
   @Get('find')
-  findOne(
-    @Query() queryUserDto : QueryUserDto
-  ) {
-
+  findOne(@Query() queryUserDto: QueryUserDto) {
     if (!queryUserDto.email && !queryUserDto.id && !queryUserDto.username) {
       throw new BadRequestException(
         'At least one of id, email, or username must be provided',
@@ -72,8 +76,11 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Patch('update-password')
-  updatePassword(@Body() updatePasswordDto : UpdatePasswordDto, @CurrentUser() user : any){
-    return this.usersService.updatePassword(updatePasswordDto, user.userId)
+  updatePassword(
+    @Body() updatePasswordDto: UpdatePasswordDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.usersService.updatePassword(updatePasswordDto, user.userId);
   }
 
   @Delete(':id')

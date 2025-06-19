@@ -39,13 +39,13 @@ export class RegistrationInterceptor implements NestInterceptor {
       const messages = errors.map((error) =>
         Object.values(error.constraints || {}).join(', '),
       );
-      throw new BadRequestException(messages)
+      throw new BadRequestException(messages);
     }
 
     const user = await this.usersService.create({
       ...createUserDto,
-      password : this.authService.hash(createUserDto.password)
-    })
+      password: this.authService.hash(createUserDto.password),
+    });
     request.user = user;
     return next.handle();
   }

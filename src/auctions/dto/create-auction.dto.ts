@@ -46,4 +46,3 @@ export class CreateAuctionDto {
   @IsOptional()
   images?: string;
 }
-

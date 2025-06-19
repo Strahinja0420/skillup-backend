@@ -31,8 +31,8 @@ export class AuctionsService {
         },
       });
     } catch (error) {
-       console.log(error);
-      
+      console.log(error);
+
       throw new BadRequestException(
         'Something went wrong while creating an auction.',
       );
@@ -41,7 +41,7 @@ export class AuctionsService {
 
   async findAll() {
     return await this.databaseService.auction.findMany({
-      orderBy: { endTime: 'asc' },
+      orderBy: { endTime: 'desc' },
       include: {
         bids: true,
       },

@@ -24,9 +24,7 @@ export class BidsController {
     @CurrentUser() user: any,
     @Param('auctionId', ParseIntPipe) auctionId: number,
   ) {
-   
-
-    return this.bidsService.create({...createBidDto,auctionId}, user.userId);
+    return this.bidsService.create({ ...createBidDto, auctionId }, user.userId);
   }
 
   @Get()

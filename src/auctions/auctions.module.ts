@@ -6,7 +6,8 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 
 @Module({
-  imports: [MulterModule.register({
+  imports: [
+    MulterModule.register({
       dest: './public/images',
       storage: diskStorage({
         destination: './public/images',
@@ -14,7 +15,8 @@ import { diskStorage } from 'multer';
           cb(null, new Date().getTime() + '-' + file.originalname);
         },
       }),
-    }),],
+    }),
+  ],
   controllers: [AuctionsController],
   providers: [AuctionsService, DatabaseService],
 })

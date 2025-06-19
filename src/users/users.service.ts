@@ -24,16 +24,21 @@ export class UsersService {
       throw new BadRequestException(
         'Something went wrong while creating a user',
       );
-      
-      
     }
   }
 
+  async getUserAuctions(userId: number) {
+    return this.databaseService.auction.findMany({
+      where: {
+        creatorId: userId,
+      },
+    });
+  }
   async findAll() {
     return await this.databaseService.user.findMany({
-      include : {
-        bids : true
-      }
+      include: {
+        bids: true,
+      },
     });
   }
 
@@ -98,7 +103,7 @@ export class UsersService {
 
       //These logs were used to fix my comparing not working
 
-      // console.log('user.password (hashed):', user.password); 
+      // console.log('user.password (hashed):', user.password);
       // console.log('dto.newPassword (plain):', dto.newPassword);
 
       const samePassword = await bcrypt.compare(dto.newPassword, user.password);
