@@ -43,7 +43,7 @@ export class AuctionsController {
 
       const auctionData = {
         ...createAuctionDto,
-        images: file ? `${file.filename}` : '',
+        images: file ? `${file.filename}` : createAuctionDto.images,
       };
 
       console.log('Processed auction data:', auctionData);

@@ -46,6 +46,14 @@ export class UsersService {
     try {
       return await this.databaseService.user.findFirst({
         where: queryUserDto,
+        include:{
+          _count:{
+            select:{
+              createdAuctions : true,
+              bids : true
+            }
+          }
+        }
       });
     } catch (error) {
       throw new BadRequestException(
@@ -54,24 +62,24 @@ export class UsersService {
     }
   }
 
-  async updateUser(email: string, updateUserDto: UpdateUserDto) {
+  async updateUser(userId: number, updateUserDto: UpdateUserDto) {
     try {
-      if (!email) {
-        throw new BadRequestException('Email must be provided.');
+      if (!userId) {
+        throw new BadRequestException('ID must be provided.');
       }
 
       const existingUser = await this.databaseService.user.findFirst({
         where: {
-          email,
+          id : userId
         },
       });
 
       if (!existingUser) {
-        throw new NotFoundException('User not found with the given email.');
+        throw new NotFoundException('User not found.');
       }
 
       const updatedUser = await this.databaseService.user.update({
-        where: { email: existingUser.email },
+        where: { id: existingUser.id },
         data: updateUserDto,
       });
 

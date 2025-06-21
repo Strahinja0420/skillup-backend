@@ -18,7 +18,7 @@ export class CreateAuctionDto {
   title: string;
 
   @IsEnum(AuctionCategory)
-  category: AuctionCategory;
+  category?: AuctionCategory;
 
   @IsOptional()
   @IsString()

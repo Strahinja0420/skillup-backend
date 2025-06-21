@@ -23,6 +23,7 @@ export class AuctionsService {
       return await this.databaseService.auction.create({
         data: {
           ...createAuctionDto,
+          category : 'OTHER',
           creator: {
             connect: {
               id: userId,

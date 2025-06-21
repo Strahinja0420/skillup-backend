@@ -37,17 +37,16 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('me')
-  getMe(@CurrentUser() user: User) {
-    const queryDto: QueryUserDto = { id: user.id };
+  getMe(@CurrentUser() user: { userId: number }) {
+    const queryDto: QueryUserDto = { id: user.userId };
     return this.usersService.findSpecific(queryDto);
   }
 
   @Get('me/auctions')
-  async getUserAuctions(@CurrentUser() user: User) {
+  async getUserAuctions(@CurrentUser() user: { userId: number }) {
     try {
-      return this.usersService.getUserAuctions(user.id);
+      return this.usersService.getUserAuctions(user.userId);
     } catch (error) {
       console.log(error);
     }
@@ -65,20 +64,21 @@ export class UsersController {
     return this.usersService.findSpecific(queryUserDto);
   }
 
-  @Patch('update-user')
-  update(@Query('email') email: string, @Body() updateUserDto: UpdateUserDto) {
-    if (!email) {
-      throw new BadRequestException('Provide an email to update user');
+  @Patch('profile')
+  update(@CurrentUser() user: { userId: number }, @Body() updateUserDto: UpdateUserDto) {
+    if (!user) {
+      throw new BadRequestException('Couldnt find the user');
     }
+    
 
-    return this.usersService.updateUser(email, updateUserDto);
+    return this.usersService.updateUser(user.userId, updateUserDto);
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Patch('update-password')
   updatePassword(
     @Body() updatePasswordDto: UpdatePasswordDto,
-    @CurrentUser() user: any,
+    @CurrentUser() user : {userId: number},
   ) {
     return this.usersService.updatePassword(updatePasswordDto, user.userId);
   }
